@@ -19,11 +19,12 @@
   Servo Right;
 
   char Progress_status;
-  char Speed_S; 
+  char Speed_S;
   char Speed_Ml; 
 
-  char Selec;
-  char Instruc;
+
+  char Selec; 
+  char Instruc; 
   int Speed;
   int Data;
   int Current = 90;
@@ -69,7 +70,7 @@
 
 
   void Receive() {
-    // listens to both LoRa (Serial2) and USB (Serial Monitor)
+    
     if (LoRa.available()) {
       Command = LoRa.readStringUntil('\n');
       Command.trim();
@@ -96,27 +97,34 @@
     Serial.print(Data);
     Serial.print(" at speed ");
     Serial.print(Speed);
-    Serial.print(" start=");
-    Serial.println(millis());
-
-    switch (Instruc) {
-      case 'L':
-        while (Cur_SPL != Data) {
-          if (Data > Cur_SPL) Cur_SPL = min(Cur_SPL + Step_Size, Data);
-          else                Cur_SPL = max(Cur_SPL - Step_Size, Data);
-          Left.write(Cur_SPL);
-          delay(Speed);
+    Serial.print(" start=");             
+          Left.write(Data);      
+          Cur_SPL = Data;
+        } else {
+          while (Cur_SPL != Data) {
+            if (Data > Cur_SPL) Cur_SPL = min(Cur_SPL + Step_Size, Data);
+            else                Cur_SPL = max(Cur_SPL - Step_Size, Data);
+            Left.write(Cur_SPL);
+            delay(Speed);
+          }
         }
         break;
 
       case 'R':
-        while (Cur_SPR != Data) {
-          if (Data > Cur_SPR) Cur_SPR = min(Cur_SPR + Step_Size, Data);
-          else                Cur_SPR = max(Cur_SPR - Step_Size, Data);
-          Right.write(Cur_SPR);
-          delay(Speed);
+        if (Speed == 0) {
+          Right.write(Data);
+          Cur_SPR = Data;
+        } else {
+          while (Cur_SPR != Data) {
+            if (Data > Cur_SPR) Cur_SPR = min(Cur_SPR + Step_Size, Data);
+            else                Cur_SPR = max(Cur_SPR - Step_Size, Data);
+            Right.write(Cur_SPR);
+            delay(Speed);
+          }
         }
-        break;
+        break; 
+      case 'M':
+      
     }
 
     Serial.print("end=");
