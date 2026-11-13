@@ -1,6 +1,4 @@
 #include <ESP32Servo.h>
-#include <vector>
-#include <string>
 
 void Serial_Start();
 void Receive();
